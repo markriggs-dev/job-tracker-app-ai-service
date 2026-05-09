@@ -13,6 +13,9 @@ public class ExperienceServiceClient
         var response = await _http.SendAsync(req);
         if (!response.IsSuccessStatusCode) return null;
 
+        var contentType = response.Content.Headers.ContentType?.MediaType ?? "";
+        if (!contentType.StartsWith("text/")) return null;
+
         var bytes = await response.Content.ReadAsByteArrayAsync();
         return System.Text.Encoding.UTF8.GetString(bytes);
     }

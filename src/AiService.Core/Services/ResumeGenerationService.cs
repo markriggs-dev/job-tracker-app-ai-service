@@ -111,14 +111,35 @@ public class ResumeGenerationService
         return await _repo.DeleteAsync(id, userId);
     }
 
-    private static string BuildPrompt(string jobDescription, string experienceContent, string userInstructions)
+    public async Task<BuildPromptResponse> BuildPromptAsync(
+        Guid jobId, string userId, Guid experienceProfileId, Guid aiProfileId, string bearerToken)
     {
+        var aiProfile = await _aiProfileRepo.GetByIdAsync(aiProfileId, userId)
+            ?? throw new InvalidOperationException("AI profile not found.");
+
+        var jobDescription = await _jobClient.GetJobDescriptionAsync(jobId, bearerToken);
+        var experienceContent = await _experienceClient.GetProfileContentAsync(experienceProfileId, bearerToken);
+
+        var prompt = BuildPrompt(
+            string.IsNullOrWhiteSpace(jobDescription) ? "(No job description provided)" : jobDescription,
+            experienceContent,
+            aiProfile.Instructions);
+
+        return new BuildPromptResponse(prompt, ExperienceEmbedded: !string.IsNullOrWhiteSpace(experienceContent));
+    }
+
+    private static string BuildPrompt(string jobDescription, string? experienceContent, string userInstructions)
+    {
+        var experienceSection = string.IsNullOrWhiteSpace(experienceContent)
+            ? "[Attach your experience document to this conversation — PDF and DOCX files require manual attachment]"
+            : experienceContent;
+
         return $"""
             You are an expert resume writer. Your task is to generate a tailored, ATS-optimized resume.
 
             ## Strict Rules
-            - Only use skills, roles, responsibilities, and accomplishments that appear in the experience document provided.
-            - Do NOT invent, embellish, or infer any skill or experience that is not explicitly stated in the experience document.
+            - Only use skills, roles, responsibilities, and accomplishments that appear in the experience document.
+            - Do NOT invent, embellish, or infer any skill or experience that is not explicitly stated.
             - Do NOT include experience older than 15 years unless the user instructions explicitly override this.
             - Align keywords and terminology from the job description to match phrasing in the experience document where accurate.
             - Output clean, professional Markdown suitable for conversion to a Word or PDF document.
@@ -130,7 +151,7 @@ public class ResumeGenerationService
             {jobDescription}
 
             ## Experience Document
-            {experienceContent}
+            {experienceSection}
 
             ## Output
             Generate a complete, tailored resume in Markdown format. Include sections for Summary, Experience, Skills, and Education as applicable based solely on the experience document above.

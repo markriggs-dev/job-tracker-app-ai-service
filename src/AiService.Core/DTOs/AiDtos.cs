@@ -23,3 +23,7 @@ public record GeneratedResumeResponse(
 );
 
 public record GenerateResumeRequest(Guid ExperienceProfileId, Guid AiProfileId);
+
+public record BuildPromptRequest(Guid ExperienceProfileId, Guid AiProfileId);
+
+public record BuildPromptResponse(string Prompt, bool ExperienceEmbedded);

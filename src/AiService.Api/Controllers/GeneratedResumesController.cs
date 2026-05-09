@@ -28,6 +28,20 @@ public class GeneratedResumesController : ControllerBase
         return Ok(resumes);
     }
 
+    [HttpPost("prompt")]
+    public async Task<IActionResult> BuildPrompt(Guid jobId, [FromBody] BuildPromptRequest request)
+    {
+        try
+        {
+            var result = await _service.BuildPromptAsync(jobId, UserId, request.ExperienceProfileId, request.AiProfileId, BearerToken);
+            return Ok(result);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+    }
+
     [HttpPost("generate")]
     public async Task<IActionResult> Generate(Guid jobId, [FromBody] GenerateResumeRequest request)
     {
