@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="src/AiService.Api/AiService.Api.csproj" />
+  <Project Path="src/AiService.Core/AiService.Core.csproj" />
+  <Project Path="src/AiService.Infrastructure/AiService.Infrastructure.csproj" />
+  <Project Path="tests/AiService.UnitTests/AiService.UnitTests.csproj" />
+  <Project Path="tests/AiService.IntegrationTests/AiService.IntegrationTests.csproj" />
+</Solution>
