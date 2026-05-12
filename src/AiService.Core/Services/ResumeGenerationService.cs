@@ -137,14 +137,7 @@ public class ResumeGenerationService
         return $"""
             You are an expert resume writer. Your task is to generate a tailored, ATS-optimized resume.
 
-            ## Strict Rules
-            - Only use skills, roles, responsibilities, and accomplishments that appear in the experience document.
-            - Do NOT invent, embellish, or infer any skill or experience that is not explicitly stated.
-            - Do NOT include experience older than 15 years unless the user instructions explicitly override this.
-            - Align keywords and terminology from the job description to match phrasing in the experience document where accurate.
-            - Output clean, professional Markdown suitable for conversion to a Word or PDF document.
-
-            ## User Instructions
+            ## Instructions
             {userInstructions}
 
             ## Job Description
@@ -154,7 +147,7 @@ public class ResumeGenerationService
             {experienceSection}
 
             ## Output
-            Generate a complete, tailored resume in Markdown format. Include sections for Summary, Experience, Skills, and Education as applicable based solely on the experience document above.
+            Generate a complete, tailored resume in Markdown format. Include sections for Summary, Experience, Skills, and Education as applicable based on the instructions and experience document above.
             """;
     }
 
